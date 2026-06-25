@@ -24,7 +24,7 @@ Each step runs **per detected workspace** inside `workspaces/<name>/`. Root-leve
 
 ## Workspace detection
 
-Run [scripts/detect-workspaces.sh](scripts/detect-workspaces.sh) from the repo root. No arguments — scope is always the current branch only.
+Run `<skill-root>/scripts/detect-workspaces.sh` from the `rhdh-plugins` repo root. `<skill-root>` is the directory containing [SKILL.md](SKILL.md) — see [Installation](SKILL.md#installation) for project vs global paths. No arguments; scope is always the current branch only.
 
 **Scope:**
 

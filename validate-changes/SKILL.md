@@ -12,6 +12,17 @@ description: >-
 
 Validation for the `rhdh-plugins` monorepo. Workspaces live under `workspaces/<name>/`.
 
+## Installation
+
+Cursor loads this skill from **either** location:
+
+| Scope | Path |
+|-------|------|
+| Project | `.cursor/skills/validate-changes/` in the `rhdh-plugins` clone |
+| Global | `~/.cursor/skills/validate-changes/` or `~/.cursor/skills/rhdh-plugins-skills/validate-changes/` |
+
+Source repo: [rhdh-plugins-skills](https://github.com/imykhno/rhdh-plugins-skills). When the skill is loaded, `<skill-root>` is the directory that contains this `SKILL.md` (from `available_skills` fullPath or the paths above).
+
 **Scope:** Workspaces are determined from **all commits on the current branch** (since the branch was created), plus any staged/unstaged/untracked working-tree changes. Pushed and unpushed commits are both included. If you changed one workspace, all validation runs **only in that workspace** — never across the whole monorepo.
 
 Run steps in order. On failure, follow [Failure recovery](#failure-recovery) — analyze, propose a fix, wait for user approval, then apply and re-run.
@@ -32,10 +43,15 @@ Validation Progress:
 
 ## Step 0 — Detect workspaces
 
-Run from the repo root:
+Run from the `rhdh-plugins` repo root. Resolve the script from project or global install (or use `<skill-root>/scripts/detect-workspaces.sh` when you know the loaded skill path):
 
 ```bash
-.cursor/skills/validate-changes/scripts/detect-workspaces.sh
+bash "$(for p in \
+  .cursor/skills/validate-changes/scripts/detect-workspaces.sh \
+  "$HOME/.cursor/skills/validate-changes/scripts/detect-workspaces.sh" \
+  "$HOME/.cursor/skills/rhdh-plugins-skills/validate-changes/scripts/detect-workspaces.sh"; do
+  [ -f "$p" ] && echo "$p" && break
+done)"
 ```
 
 The script prints scope metadata to stderr:
@@ -75,7 +91,7 @@ Output is one workspace per line (e.g. `scorecard`).
 
 Config and TypeScript are read-only and safe to parallelize across independent workspaces. Build, unit tests, API reports, and e2e run sequentially per workspace to avoid thrashing the machine. Step 6 starts the app manually with `yarn start`, runs Playwright, then **must stop the app** when tests finish (success or failure).
 
-**Step 6 skip rule:** Run step 6 only when `workspaces/<name>/playwright.config.ts` exists — same condition as [`.github/workflows/ci.yml`](../../../.github/workflows/ci.yml). Skip silently for workspaces without Playwright.
+**Step 6 skip rule:** Run step 6 only when `workspaces/<name>/playwright.config.ts` exists — same condition as `.github/workflows/ci.yml` in the `rhdh-plugins` repo. Skip silently for workspaces without Playwright.
 
 Stop immediately if **any** workspace fails; report the workspace, command, and error output, then follow [Failure recovery](#failure-recovery).
 
@@ -240,7 +256,7 @@ Report to the user:
 - Build-generated or API report files that may need staging
 - Whether the branch looks ready
 
-For the full PR workflow (branch creation, changesets, push): [.cursor/commands/pr.md](../../commands/pr.md)
+For the full PR workflow (branch creation, changesets, push): `.cursor/commands/pr.md` in the `rhdh-plugins` repo (project install only).
 
 ## Additional resources
 

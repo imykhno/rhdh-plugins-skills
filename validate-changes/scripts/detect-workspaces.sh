@@ -8,8 +8,10 @@
 # Outputs one workspace name per line. Root-level changes are ignored.
 # Prints scope metadata (base ref, branch commits) to stderr.
 #
-# Usage:
-#   detect-workspaces.sh
+# Usage (from rhdh-plugins repo root):
+#   bash <skill-root>/scripts/detect-workspaces.sh
+#   <skill-root> is .cursor/skills/validate-changes (project) or
+#   ~/.cursor/skills/validate-changes or ~/.cursor/skills/rhdh-plugins-skills/validate-changes (global).
 set -euo pipefail
 
 REPO_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || pwd)"

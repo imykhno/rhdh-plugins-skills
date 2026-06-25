@@ -2,15 +2,35 @@
 
 Shared Cursor configuration for the RHDH Plugins team working in the [rhdh-plugins](https://github.com/redhat-developer/rhdh-plugins) monorepo.
 
-Each skill is a top-level directory in this repo (for example, `validate-changes/`). Install a skill into `.cursor/skills/<name>/` in the target project so Cursor agents can discover and use it.
+Each skill is a top-level directory in this repo (for example, `validate-changes/`). Cursor discovers skills from **either** location:
+
+| Scope | Path | When to use |
+|-------|------|-------------|
+| **Project**  | `rhdh-plugins/.cursor/skills/<name>/` | Share with the team via the monorepo |
+| **Global**   | `~/.cursor/skills/<name>/` or `~/.cursor/skills/rhdh-plugins-skills/<name>/` | Personal install, all clones |
+
+Source: [github.com/imykhno/rhdh-plugins-skills](https://github.com/imykhno/rhdh-plugins-skills)
 
 ## Setup
+
+### Project install (recommended for team)
 
 Copy skill directories into a local `rhdh-plugins` clone (create `.cursor/skills/` if it does not exist):
 
 ```bash
 mkdir -p /path/to/rhdh-plugins/.cursor/skills
 cp -R validate-changes /path/to/rhdh-plugins/.cursor/skills/
+```
+
+### Global install (personal)
+
+Clone or copy into your user skills directory:
+
+```bash
+git clone https://github.com/imykhno/rhdh-plugins-skills.git ~/.cursor/skills/rhdh-plugins-skills
+# or copy a single skill:
+mkdir -p ~/.cursor/skills
+cp -R validate-changes ~/.cursor/skills/
 ```
 
 Skills are picked up automatically when you ask the agent to validate changes, check before push, or prepare a branch for PR.
@@ -29,10 +49,15 @@ Run CI-equivalent checks only in workspaces touched on the current branch — no
 
 - **Scope:** all commits since the branch was created (from `git reflog`), plus staged, unstaged, and untracked changes. Pushed and unpushed branch commits are both included. If the branch creation point is not found in reflog, only working-tree changes are used.
 - **Paths:** only changes under `workspaces/<name>/` where `workspaces/<name>/package.json` exists. Root-level file changes are ignored.
-- **Script:** run from the `rhdh-plugins` repo root after install:
+- **Script:** run from the `rhdh-plugins` repo root (resolves project or global install):
 
 ```bash
-.cursor/skills/validate-changes/scripts/detect-workspaces.sh
+bash "$(for p in \
+  .cursor/skills/validate-changes/scripts/detect-workspaces.sh \
+  "$HOME/.cursor/skills/validate-changes/scripts/detect-workspaces.sh" \
+  "$HOME/.cursor/skills/rhdh-plugins-skills/validate-changes/scripts/detect-workspaces.sh"; do
+  [ -f "$p" ] && echo "$p" && break
+done)"
 ```
 
 All commands run inside `workspaces/<name>/`.
