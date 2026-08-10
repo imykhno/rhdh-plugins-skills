@@ -19,7 +19,7 @@ Copy skill directories into a local `rhdh-plugins` clone (create `.cursor/skills
 
 ```bash
 mkdir -p /path/to/rhdh-plugins/.cursor/skills
-cp -R validate-changes /path/to/rhdh-plugins/.cursor/skills/
+cp -R validate-changes backstage-unit-tests /path/to/rhdh-plugins/.cursor/skills/
 ```
 
 ### Global install (personal)
@@ -31,15 +31,17 @@ git clone https://github.com/imykhno/rhdh-plugins-skills.git ~/.cursor/skills/rh
 # or copy a single skill:
 mkdir -p ~/.cursor/skills
 cp -R validate-changes ~/.cursor/skills/
+cp -R backstage-unit-tests ~/.cursor/skills/
 ```
 
-Skills are picked up automatically when you ask the agent to validate changes, check before push, or prepare a branch for PR.
+Skills are picked up automatically when you ask the agent to validate changes, check before push, prepare a branch for PR, or add/update unit tests.
 
 ## Available skills
 
 | Skill | When to use | Details |
 |-------|-------------|---------|
 | `validate-changes` | Validate branch changes, check before push, prepare a branch for PR | [SKILL.md](validate-changes/SKILL.md) |
+| `backstage-unit-tests` | Add, write, update, or refactor plugin unit tests | [SKILL.md](backstage-unit-tests/SKILL.md) |
 
 ## validate-changes
 
@@ -83,3 +85,22 @@ All commands run inside `workspaces/<name>/`.
 
 - Full agent workflow and failure recovery: [SKILL.md](validate-changes/SKILL.md)
 - Edge cases (multi-locale E2E, config schema, baseline diffs): [reference.md](validate-changes/reference.md)
+
+## backstage-unit-tests
+
+Standards-first guidance for creating and updating Jest unit tests for
+Backstage frontend and backend plugins in `rhdh-plugins` (`workspaces/*`).
+
+**Auto-triggers:** add / write / create / update / refactor / improve unit
+tests for plugins, services, routers, hooks, components, or providers.
+
+**Policy:** assert behavior over implementation; mock at boundaries only;
+do not treat existing tests as correct by default. Selective “great ideas”
+(DI, fixture builders, `TestDatabases`, contract locks) are documented in
+the skill; spy-heavy suites are not the standard.
+
+### Further reading
+
+- Agent workflow and rules: [SKILL.md](backstage-unit-tests/SKILL.md)
+- Layer tooling and procedures: [reference.md](backstage-unit-tests/reference.md)
+- Good templates: [examples.md](backstage-unit-tests/examples.md)
